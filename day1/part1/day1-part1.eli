@@ -1,0 +1,42 @@
+defmodule Day1Part1 do
+  def head(string) do
+    String.first(string)
+  end
+
+  def tail(string) do
+    String.slice(string, 1..-1)
+  end
+
+  def sum(very_first_character, previous_character, string, total) do
+    string_length = String.length(string)
+    cond do
+      string_length == 0 && very_first_character == previous_character ->
+        total + String.to_integer(very_first_character)
+      string_length == 0 ->
+        total
+      string_length > 0 ->
+        first_character = head(string)
+        additional_amount = cond do
+          previous_character == first_character ->
+            String.to_integer(previous_character)
+          true ->
+            0
+        end
+
+        sum(very_first_character, first_character, tail(string), total + additional_amount)
+    end
+  end
+end
+
+
+{:ok, file} = File.open("input.txt", [:read, :utf8])
+try do
+  line = String.trim(IO.read(file, :line), "\n")
+
+  head = Day1Part1.head(line)
+  tail = Day1Part1.tail(line)
+
+  IO.puts "Final Answer: " <> Integer.to_string(Day1Part1.sum(head, head, tail, 0))
+after
+  File.close(file)
+end

@@ -1,0 +1,40 @@
+defmodule Day1Part2 do
+  def rotate(string) do
+    tail(string) <> head(string)
+  end
+
+  def head(string) do
+    String.first(string)
+  end
+
+  def tail(string) do
+    String.slice(string, 1..-1)
+  end
+
+  def sum(string, total, iteration_count) do
+    cond do
+      iteration_count > String.length(string) ->
+        total
+      true ->
+        first_char = head(string)
+        middle_char_position = round(String.length(string) / 2)
+        middle_char = String.at(string, middle_char_position)
+        total_to_pass = cond do
+          first_char == middle_char ->
+            total + String.to_integer(first_char)
+          true ->
+            total
+        end
+        sum(rotate(string), total_to_pass, iteration_count + 1)
+    end
+  end
+end
+
+{:ok, file} = File.open("input.txt", [:read, :utf8])
+try do
+  line = String.trim(IO.read(file, :line), "\n")
+
+  IO.puts "Final Answer: " <> Integer.to_string(Day1Part2.sum(line, 0, 1))
+after
+  File.close(file)
+end
