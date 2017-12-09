@@ -1,0 +1,60 @@
+defmodule Day2Part1 do
+
+  def calculate_difference(line) do
+    number_list = Enum.map(String.split(line, "\t"), fn x -> String.to_integer(x) end)
+    {min, max} = find_min_max(number_list, nil, nil)
+    max - min
+  end
+
+  def find_min_max(list, min, max) do
+    cond do
+      List.first(list) == nil ->
+        {min, max}
+      true ->
+        [head | tail] = list
+
+        new_min = find_min(head, min)
+        new_max = find_max(head, max)
+
+        find_min_max(tail, new_min, new_max)
+    end
+  end
+
+  def find_min(first, second) do
+    cond do
+      first == nil ->
+        second
+      second == nil ->
+        first
+      true ->
+        min(first, second)
+    end
+  end
+
+  def find_max(first, second) do
+    cond do
+      first == nil ->
+        second
+      second == nil ->
+        first
+      true ->
+        max(first, second)
+    end
+  end
+
+  def process_line(file, checksum_total) do
+    case IO.read(file, :line) do
+    :eof ->
+      checksum_total
+    data ->
+      calculate_difference(String.trim(data, "\n")) + process_line(file, checksum_total)
+    end
+  end
+end
+
+{:ok, file} = File.open("input.txt", [:read, :utf8])
+try do
+  IO.puts "Final Answer: " <> Integer.to_string(Day2Part1.process_line(file, 0))
+after
+  File.close(file)
+end
